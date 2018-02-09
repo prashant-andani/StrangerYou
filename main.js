@@ -5,6 +5,7 @@
     app_key: '781703e792834963cc0004afd656aee3'
   };
 
+
   let video = document.querySelector('video'),
     canvas, img;
   // document.getElementById('uploadInput').addEventListener('change', readURL);
@@ -55,7 +56,7 @@
 
     context = canvas.getContext('2d');
     context.drawImage(video, 0, 0, width, height);
-
+    img = canvas.toDataURL('image/png');
     recognizeImage(canvas.toDataURL('image/png'));
   }
 
@@ -79,6 +80,8 @@
    * @param {image src} image 
    */
   function recognizeImage(image) {
+    let btnEl = document.getElementById('recgBtn');
+    btnEl.innerText = 'Recognizing...';
     const url = 'https://api.kairos.com/recognize';
     fetch(url, {
         method: 'post',
@@ -93,18 +96,50 @@
         })
       }).then(res => res.json())
       .then(res => {
+        btnEl.innerText = 'Recognize';
         let data = 'No faces found.. Try again..';
+        let resultEl = document.getElementById('result');
         if (res.Errors && res.Errors.length > 0) {
           data = res.Errors[0]['Message'];
         } else {
-          console.log(res.images[0].transaction.status);
           if (res.images[0].transaction.status == 'success') {
-            data = `Hey ${res.images[0].transaction.subject_id}!! How are you !!`
+            data = `<i class="far fa-2x fa-smile"></i><br/>Hey ${res.images[0].transaction.subject_id}!! How are you !!`
+            resultEl.innerHTML = data;
           } else {
-            data = 'Hey stranger, can we be friends ... ??';
+            data = `<i class="far fa-2x fa-frown"></i><br/>Hey stranger, can we be friends ... ??
+            <input type="text" id="userNameTxt" class="form-group" placeholder="Your name?"/> <button id="btnAddUser" class="btn btn-success">OK</button>`;
+            resultEl.innerHTML = data;
+            document.getElementById('btnAddUser').addEventListener('click', recogNewUser);
+
           }
         }
-        document.getElementById('result').innerHTML = data;
+
+        resultEl.style.display = 'block';
+
+      });
+  }
+
+  function recogNewUser() {
+    //img from global
+    const url = 'https://api.kairos.com/enroll'
+    const userName = document.getElementById('userNameTxt').value;
+    fetch(url, {
+        method: 'post',
+        headers: {
+          'app_id': api_config.app_id,
+          'app_key': api_config.app_key,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'image': img,
+          'gallery_name': 'MyGallery',
+          'subject_id': userName
+        })
+      }).then(res => res.json())
+      .then(res => {
+        console.log(res);
+        let resultEl = document.getElementById('result');
+        resultEl.innerText = `Hey ${userName}! From now on i can recognize you!!`;
       });
   }
 })();

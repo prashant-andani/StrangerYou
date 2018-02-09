@@ -14,7 +14,8 @@
   </style>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
     crossorigin="anonymous">
-  <script async src="https://use.fontawesome.com/d8c77f8373.js"></script>
+
+
 </head>
 
 <body>
@@ -28,24 +29,25 @@
     <div class="collapse navbar-collapse float-right" id="navbarNavAltMarkup">
       <div class="navbar-nav ">
         <a class="nav-item nav-link" href="https://github.com/prashant-andani/ocr-javascript">
-          <i class="fa fa-lg fa-github"></i> Github</a>
+          <i class="fab fa-lg fa-github"></i> Github</a>
       </div>
     </div>
   </nav>
   <div class="container">
-    <div class="row">
-    </div>
-
-    <div class="row">
+    <div class="jumbotron">
       <div class="col-md-12" id="main">
         <!-- Access to camera and recognize content -->
-        <div class="alert alert-primary">
-          Recognize
-          <button id="btnCameraAccess" class="float-right btn btn-danger btn-sm"><i class="fa fa-camera fa-lg"></i> Access Camera</button>
-        </div>
+        <h3>Recognizes your face</h3>
+
+        <button id="btnCameraAccess" class=" btn btn-danger btn-sm">
+          <i class="fa fa-camera fa-lg"></i> Access Camera</button>
         <video autoplay></video>
         <button type="button" id="recgBtn" class="btn btn-primary btn-lg btn-block" style="display:none">Recognize</button>
       </div>
+    </div>
+
+    <div class="row">
+
       <!-- <div class="col-md-6">
 				<div class="alert alert-primary"><i class="fa fa-image fa-lg"></i> Recognize image content
 				</div>
@@ -54,16 +56,15 @@
 					<img id="image" src="" alt="" style="max-height: 300px;" />
 				</div>
 			</div> -->
-		</div>
-		<div style="margin-top: 20px;" class="alert alert-primary" id="result">
-
-		</div>
+    </div>
+    <div style="margin-top: 20px;display:none" class="alert alert-primary" id="result">
+    </div>
   </div>
 
 
-  <script src="main.js">
+  <script src="main.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
-  </script>
 </body>
 
 </html>

@@ -68,9 +68,10 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({2:[function(require,module,exports) {
+})({4:[function(require,module,exports) {
 (function () {
   'use strict';
+  /** Use you own api_id and api_key */
   const api_config = {
     app_id: '40832646',
     app_key: '781703e792834963cc0004afd656aee3'
@@ -78,10 +79,8 @@ require = (function (modules, cache, entry) {
 
   let video = document.querySelector('video'),
     canvas, img;
-  // document.getElementById('uploadInput').addEventListener('change', readURL);
   document.getElementById('recgBtn').addEventListener('click', takeSnapshot);
   document.getElementById('btnCameraAccess').addEventListener('click', accessCamera);
-  //recognizeImage('assets/sample_text.png');
   /**
    *  Access to camera
    * 
@@ -126,7 +125,7 @@ require = (function (modules, cache, entry) {
 
     context = canvas.getContext('2d');
     context.drawImage(video, 0, 0, width, height);
-
+    img = canvas.toDataURL('image/png');
     recognizeImage(canvas.toDataURL('image/png'));
   }
 
@@ -150,6 +149,10 @@ require = (function (modules, cache, entry) {
    * @param {image src} image 
    */
   function recognizeImage(image) {
+    let btnEl = document.getElementById('recgBtn');
+    let resultEl = document.getElementById('result');
+    resultEl.style.display = 'none';
+    btnEl.innerText = 'Recognizing...';
     const url = 'https://api.kairos.com/recognize';
     fetch(url, {
         method: 'post',
@@ -164,18 +167,47 @@ require = (function (modules, cache, entry) {
         })
       }).then(res => res.json())
       .then(res => {
+        btnEl.innerText = 'Recognize Me';
         let data = 'No faces found.. Try again..';
+
         if (res.Errors && res.Errors.length > 0) {
           data = res.Errors[0]['Message'];
         } else {
-          console.log(res.images[0].transaction.status);
           if (res.images[0].transaction.status == 'success') {
-            data = `Hey ${res.images[0].transaction.subject_id}!! How are you !!`
+            data = `<i class="far fa-5x fa-smile"></i><br/>Hey ${res.images[0].transaction.subject_id}!! How are you !!`
+            resultEl.innerHTML = data;
           } else {
-            data = 'Hey stranger, can we be friends ... ??';
+            data = `<i class="far fa-5x fa-frown"></i><br/>Hey stranger, can we be friends ... ??
+            <input type="text" id="userNameTxt" class="form-control" placeholder="Your name?"/> <button id="btnAddUser" class="btn btn-success btn-block">OK</button>`;
+            resultEl.innerHTML = data;
+            document.getElementById('btnAddUser').addEventListener('click', recogNewUser);
           }
         }
-        document.getElementById('result').innerHTML = data;
+        resultEl.style.display = 'block';
+      });
+  }
+
+  function recogNewUser() {
+    //img from global
+    const url = 'https://api.kairos.com/enroll'
+    const userName = document.getElementById('userNameTxt').value;
+    fetch(url, {
+        method: 'post',
+        headers: {
+          'app_id': api_config.app_id,
+          'app_key': api_config.app_key,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'image': img,
+          'gallery_name': 'MyGallery',
+          'subject_id': userName
+        })
+      }).then(res => res.json())
+      .then(res => {
+        console.log(res);
+        let resultEl = document.getElementById('result');
+        resultEl.innerText = `Hey ${userName}! From now on i can recognize you!!`;
       });
   }
 })();
@@ -198,7 +230,7 @@ function Module() {
 module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
-  var ws = new WebSocket('ws://localhost:60411/');
+  var ws = new WebSocket('ws://localhost:60171/');
   ws.onmessage = function(event) {
     var data = JSON.parse(event.data);
 
@@ -299,4 +331,4 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id)
   });
 }
-},{}]},{},[0,2])
+},{}]},{},[0,4])

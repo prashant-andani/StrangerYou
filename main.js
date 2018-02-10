@@ -1,17 +1,15 @@
 (function () {
   'use strict';
+  /** Use you own api_id and api_key */
   const api_config = {
     app_id: '40832646',
     app_key: '781703e792834963cc0004afd656aee3'
   };
 
-
   let video = document.querySelector('video'),
     canvas, img;
-  // document.getElementById('uploadInput').addEventListener('change', readURL);
   document.getElementById('recgBtn').addEventListener('click', takeSnapshot);
   document.getElementById('btnCameraAccess').addEventListener('click', accessCamera);
-  //recognizeImage('assets/sample_text.png');
   /**
    *  Access to camera
    * 
@@ -81,6 +79,8 @@
    */
   function recognizeImage(image) {
     let btnEl = document.getElementById('recgBtn');
+    let resultEl = document.getElementById('result');
+    resultEl.style.display = 'none';
     btnEl.innerText = 'Recognizing...';
     const url = 'https://api.kairos.com/recognize';
     fetch(url, {
@@ -96,26 +96,23 @@
         })
       }).then(res => res.json())
       .then(res => {
-        btnEl.innerText = 'Recognize';
+        btnEl.innerText = 'Recognize Me';
         let data = 'No faces found.. Try again..';
-        let resultEl = document.getElementById('result');
+
         if (res.Errors && res.Errors.length > 0) {
           data = res.Errors[0]['Message'];
         } else {
           if (res.images[0].transaction.status == 'success') {
-            data = `<i class="far fa-2x fa-smile"></i><br/>Hey ${res.images[0].transaction.subject_id}!! How are you !!`
+            data = `<i class="far fa-5x fa-smile"></i><br/>Hey ${res.images[0].transaction.subject_id}!! How are you !!`
             resultEl.innerHTML = data;
           } else {
-            data = `<i class="far fa-2x fa-frown"></i><br/>Hey stranger, can we be friends ... ??
-            <input type="text" id="userNameTxt" class="form-group" placeholder="Your name?"/> <button id="btnAddUser" class="btn btn-success">OK</button>`;
+            data = `<i class="far fa-5x fa-frown"></i><br/>Hey stranger, can we be friends ... ??
+            <input type="text" id="userNameTxt" class="form-control" placeholder="Your name?"/> <button id="btnAddUser" class="btn btn-success btn-block">OK</button>`;
             resultEl.innerHTML = data;
             document.getElementById('btnAddUser').addEventListener('click', recogNewUser);
-
           }
         }
-
         resultEl.style.display = 'block';
-
       });
   }
 
